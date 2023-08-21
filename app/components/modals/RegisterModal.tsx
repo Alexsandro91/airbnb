@@ -7,9 +7,11 @@ import { AiFillGithub } from "react-icons/ai";
 import { FcGoogle } from "react-icons/fc";
 import { FieldValues, SubmitHandler, useForm } from "react-hook-form";
 import { data } from "autoprefixer";
+import Modal from "@/app/components/modals/Modal";
+import Heading from "@/app/components/Heading";
 
 const RegisterModal = () => {
-  const registerModal = useRegisterModal;
+  const registerModal = useRegisterModal();
   const [isLoading, setIsLoading] = useState(false);
   const {
     register,
@@ -25,10 +27,33 @@ const RegisterModal = () => {
 
   const onSubmit: SubmitHandler<FieldValues> = (data) => {
     setIsLoading(true);
-    axios.post("/api/register", data);
+    axios.post("/api/register", data)
+        .then(() => {
+          registerModal.onClose;
+        })
+        .catch((error) => {
+          console.debug(error);
+        })
+        .finally(() => {
+          setIsLoading(false);
+        });
   };
 
-  return <div></div>;
+  const bodyContent = (
+      <div className='flex flex-col gap-4'>
+        <Heading title='Welcome ti Airbnb' subtitle='Create an account' />
+      </div>
+  );
+
+  return <Modal
+      disabled={isLoading}
+      isOpen={registerModal.isOpen}
+      title='Register'
+      actionLabel='Continue'
+      onClose={registerModal.onClose}
+      onSubmit={handleSubmit(onSubmit)}
+      body={bodyContent}
+  />;
 };
 
 export default RegisterModal;
